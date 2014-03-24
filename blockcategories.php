@@ -33,7 +33,7 @@ class BlockCategories extends Module
 	{
 		$this->name = 'blockcategories';
 		$this->tab = 'front_office_features';
-		$this->version = '2.5';
+		$this->version = '2.6';
 		$this->author = 'PrestaShop';
 
 		$this->bootstrap = true;
@@ -41,6 +41,7 @@ class BlockCategories extends Module
 
 		$this->displayName = $this->l('Categories block');
 		$this->description = $this->l('Adds a block featuring product categories.');
+		$this->ps_versions_compliancy = array('min' => '1.5.6.1', 'max' => _PS_VERSION_);
 	}
 
 	public function install()
