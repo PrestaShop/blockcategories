@@ -233,8 +233,12 @@ class BlockCategories extends Module
 			$blockCategTree = $this->getTree($resultParents, $resultIds, $maxdepth, ($category ? $category->id : null));
 			$this->smarty->assign('blockCategTree', $blockCategTree);
 
-			if ($category)
-				$this->smarty->assign(array('currentCategory' => $category, 'currentCategoryId' => $category->id));
+			if (isset($this->context->cookie->last_visited_category) && $this->context->cookie->last_visited_category)
+			{
+				$category = new Category($this->context->cookie->last_visited_category, $this->context->language->id);
+				if (Validate::isLoadedObject($category))
+					$this->smarty->assign(array('currentCategory' => $category, 'currentCategoryId' => $category->id));
+			}
 
 			$this->smarty->assign('isDhtml', Configuration::get('BLOCK_CATEG_DHTML'));
 			if (file_exists(_PS_THEME_DIR_.'modules/blockcategories/blockcategories.tpl'))
