@@ -33,7 +33,7 @@ class BlockCategories extends Module
 	{
 		$this->name = 'blockcategories';
 		$this->tab = 'front_office_features';
-		$this->version = '2.7';
+		$this->version = '2.8';
 		$this->author = 'PrestaShop';
 
 		$this->bootstrap = true;
@@ -255,6 +255,9 @@ class BlockCategories extends Module
 
 		if ($name !== null)
 			$cache_id .= '|'.$name;
+
+		if ((Tools::getValue('id_product') || Tools::getValue('id_category')) && isset($this->context->cookie->last_visited_category) && $this->context->cookie->last_visited_category)
+			$cache_id .= '|'.(int)$this->context->cookie->last_visited_category;
 
 		return $cache_id.'|'.implode('-', Customer::getGroupsStatic($this->context->customer->id));
 	}
