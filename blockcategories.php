@@ -390,12 +390,12 @@ class BlockCategories extends Module
 							array(
 								'id' => 'home',
 								'value' => 0,
-								'label' => $this->l('Home')
+								'label' => $this->l('Home category')
 							),
 							array(
 								'id' => 'current',
 								'value' => 1,
-								'label' => $this->l('Current')
+								'label' => $this->l('Current category')
 							),
 						)
 					),
@@ -403,13 +403,13 @@ class BlockCategories extends Module
 						'type' => 'text',
 						'label' => $this->l('Maximum depth'),
 						'name' => 'BLOCK_CATEG_MAX_DEPTH',
-						'desc' => $this->l('Set the maximum depth of sublevels displayed in this block (0 = infinite).'),
+						'desc' => $this->l('Set the maximum depth of category sublevels displayed in this block (0 = infinite).'),
 					),
 					array(
 						'type' => 'switch',
 						'label' => $this->l('Dynamic'),
 						'name' => 'BLOCK_CATEG_DHTML',
-						'desc' => $this->l('Activate dynamic (animated) mode for sublevels.'),
+						'desc' => $this->l('Activate dynamic (animated) mode for category sublevels.'),
 						'values' => array(
 									array(
 										'id' => 'active_on',
