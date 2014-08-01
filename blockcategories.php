@@ -200,11 +200,11 @@ class BlockCategories extends Module
 		{
 			$range = '';
 			$maxdepth = Configuration::get('BLOCK_CATEG_MAX_DEPTH');
-			if ($category)
+			if (Validate::isLoadedObject($category))
 			{
 				if ($maxdepth > 0)
 					$maxdepth += $category->level_depth;
-				$range = 'AND nleft >= '.$category->nleft.' AND nright <= '.$category->nright;
+				$range = 'AND nleft >= '.(int)$category->nleft.' AND nright <= '.(int)$category->nright;
 			}
 
 			$resultIds = array();
