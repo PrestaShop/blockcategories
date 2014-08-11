@@ -33,11 +33,11 @@ class BlockCategories extends Module
 	{
 		$this->name = 'blockcategories';
 		$this->tab = 'front_office_features';
-		$this->version = '2.8.1';
+		$this->version = '2.8.2';
 		$this->author = 'PrestaShop';
 
 		$this->bootstrap = true;
-		parent::__construct();	
+		parent::__construct();
 
 		$this->displayName = $this->l('Categories block');
 		$this->description = $this->l('Adds a block featuring product categories.');
@@ -88,7 +88,7 @@ class BlockCategories extends Module
 	public function uninstall()
 	{
 		$id_tab = (int)Tab::getIdFromClassName('AdminBlockCategories');
-		
+
 		if ($id_tab)
 		{
 			$tab = new Tab($id_tab);
@@ -144,7 +144,7 @@ class BlockCategories extends Module
 
 		if (!isset($resultIds[$id_category]))
 			return false;
-		
+
 		$return = array(
 			'id' => $id_category,
 			'link' => $this->context->link->getCategoryLink($id_category, $resultIds[$id_category]['link_rewrite']),
@@ -161,7 +161,7 @@ class BlockCategories extends Module
 		$category = new Category((int)Tools::getValue('id_category'));
 		$files   = array();
 
-		if ($category->level_depth != 2)
+		if ($category->level_depth < 1)
 			return;
 
 		for ($i=0;$i<3;$i++)
@@ -200,11 +200,11 @@ class BlockCategories extends Module
 		{
 			$range = '';
 			$maxdepth = Configuration::get('BLOCK_CATEG_MAX_DEPTH');
-			if ($category)
+			if (Validate::isLoadedObject($category))
 			{
 				if ($maxdepth > 0)
 					$maxdepth += $category->level_depth;
-				$range = 'AND nleft >= '.$category->nleft.' AND nright <= '.$category->nright;
+				$range = 'AND nleft >= '.(int)$category->nleft.' AND nright <= '.(int)$category->nright;
 			}
 
 			$resultIds = array();
@@ -372,7 +372,7 @@ class BlockCategories extends Module
 	{
 		$this->_clearBlockcategoriesCache();
 	}
-	
+
 	public function renderForm()
 	{
 		$fields_form = array(
@@ -468,7 +468,7 @@ class BlockCategories extends Module
 				)
 			),
 		);
-		
+
 		$helper = new HelperForm();
 		$helper->show_toolbar = false;
 		$helper->table =  $this->table;
@@ -487,7 +487,7 @@ class BlockCategories extends Module
 
 		return $helper->generateForm(array($fields_form));
 	}
-	
+
 	public function getConfigFieldsValues()
 	{
 		return array(
