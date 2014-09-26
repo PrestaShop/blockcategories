@@ -33,7 +33,7 @@ class BlockCategories extends Module
 	{
 		$this->name = 'blockcategories';
 		$this->tab = 'front_office_features';
-		$this->version = '2.8.2';
+		$this->version = '2.8.3';
 		$this->author = 'PrestaShop';
 
 		$this->bootstrap = true;
