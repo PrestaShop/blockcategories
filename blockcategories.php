@@ -190,7 +190,13 @@ class BlockCategories extends Module
 
 		$from_category = Configuration::get('PS_HOME_CATEGORY');
 		if ($phpself != null && in_array($phpself, $current_allowed_controllers) && Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') && isset($this->context->cookie->last_visited_category) && $this->context->cookie->last_visited_category)
+		{
 			$from_category = $this->context->cookie->last_visited_category;
+			if (Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') == 2 && !$from_category->is_root_category && $from_category->id_parent)
+				$from_category = new Category($from_category->id_parent, $this->context->language->id);
+			elseif (Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') == 3 && !$from_category->is_root_category && !$from_category->getSubCategories($from_category->id, true))
+				$from_category = new Category($from_category->id_parent, $this->context->language->id);
+		}
 
 		$category = new Category($from_category, $this->context->language->id);
 
@@ -396,6 +402,16 @@ class BlockCategories extends Module
 								'id' => 'current',
 								'value' => 1,
 								'label' => $this->l('Current category')
+							),
+							array(
+								'id' => 'parent',
+								'value' => 2,
+								'label' => $this->l('Parent')
+							),
+							array(
+								'id' => 'current_parent',
+								'value' => 3,
+								'label' => $this->l('Current, unless it has no subcategories, then parent')
 							),
 						)
 					),
