@@ -188,17 +188,16 @@ class BlockCategories extends Module
 		$phpself = $this->context->controller->php_self;
 		$current_allowed_controllers = array('category');
 
-		$from_category = Configuration::get('PS_HOME_CATEGORY');
 		if ($phpself != null && in_array($phpself, $current_allowed_controllers) && Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') && isset($this->context->cookie->last_visited_category) && $this->context->cookie->last_visited_category)
 		{
-			$from_category = $this->context->cookie->last_visited_category;
-			if (Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') == 2 && !$from_category->is_root_category && $from_category->id_parent)
-				$from_category = new Category($from_category->id_parent, $this->context->language->id);
-			elseif (Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') == 3 && !$from_category->is_root_category && !$from_category->getSubCategories($from_category->id, true))
-				$from_category = new Category($from_category->id_parent, $this->context->language->id);
+			$category = new Category($this->context->cookie->last_visited_category, $this->context->language->id);
+			if (Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') == 2 && !$category->is_root_category && $category->id_parent)
+				$category = new Category($category->id_parent, $this->context->language->id);
+			elseif (Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') == 3 && !$category->is_root_category && !$category->getSubCategories($category->id, true))
+				$category = new Category($category->id_parent, $this->context->language->id);
 		}
-
-		$category = new Category($from_category, $this->context->language->id);
+		else
+			$category = new Category((int)Configuration::get('PS_HOME_CATEGORY');, $this->context->language->id);
 
 		$cacheId = $this->getCacheId($category ? $category->id : null);
 
