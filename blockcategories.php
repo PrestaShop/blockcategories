@@ -49,7 +49,7 @@ class BlockCategories extends Module
 		// Prepare tab
 		$tab = new Tab();
 		$tab->active = 1;
-		$tab->class_name = "AdminBlockCategories";
+		$tab->class_name = 'AdminBlockCategories';
 		$tab->name = array();
 		foreach (Language::getLanguages(true) as $lang)
 			$tab->name[$lang['id_lang']] = 'BlockCategories';
@@ -164,7 +164,7 @@ class BlockCategories extends Module
 		if ($category->level_depth < 1)
 			return;
 
-		for ($i=0;$i<3;$i++)
+		for ($i = 0; $i < 3; $i++)
 		{
 			if (file_exists(_PS_CAT_IMG_DIR_.(int)$category->id.'-'.$i.'_thumb.jpg'))
 			{
@@ -197,7 +197,7 @@ class BlockCategories extends Module
 				$category = new Category($category->id_parent, $this->context->language->id);
 		}
 		else
-			$category = new Category((int)Configuration::get('PS_HOME_CATEGORY');, $this->context->language->id);
+			$category = new Category((int)Configuration::get('PS_HOME_CATEGORY'), $this->context->language->id);
 
 		$cacheId = $this->getCacheId($category ? $category->id : null);
 
@@ -486,7 +486,7 @@ class BlockCategories extends Module
 
 		$helper = new HelperForm();
 		$helper->show_toolbar = false;
-		$helper->table =  $this->table;
+		$helper->table = $this->table;
 		$lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
 		$helper->default_form_language = $lang->id;
 		$helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
