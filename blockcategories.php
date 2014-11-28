@@ -391,6 +391,7 @@ class BlockCategories extends Module
 						'type' => 'radio',
 						'label' => $this->l('Category root'),
 						'name' => 'BLOCK_CATEG_ROOT_CATEGORY',
+						'hint' => $this->l('Select which category is displayed in the block. The current category is the one the visitor is currently browsing.'),
 						'values' => array(
 							array(
 								'id' => 'home',
@@ -405,12 +406,12 @@ class BlockCategories extends Module
 							array(
 								'id' => 'parent',
 								'value' => 2,
-								'label' => $this->l('Parent')
+								'label' => $this->l('Parent category')
 							),
 							array(
 								'id' => 'current_parent',
 								'value' => 3,
-								'label' => $this->l('Current, unless it has no subcategories, then parent')
+								'label' => $this->l('Current category, unless it has no subcategories, then parent one')
 							),
 						)
 					),
