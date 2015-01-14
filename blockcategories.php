@@ -70,18 +70,8 @@ class BlockCategories extends Module
 			!Configuration::updateValue('BLOCK_CATEG_MAX_DEPTH', 4) ||
 			!Configuration::updateValue('BLOCK_CATEG_DHTML', 1) ||
 			!Configuration::updateValue('BLOCK_CATEG_ROOT_CATEGORY', 1))
-			return false;
+				return false;
 
-		// Hook the module either on the left or right column
-		$theme = new Theme(Context::getContext()->shop->id_theme);
-		if ((!$theme->default_left_column || !$this->registerHook('leftColumn'))
-			&& (!$theme->default_right_column || !$this->registerHook('rightColumn')))
-		{
-			// If there are no colums implemented by the template, throw an error and uninstall the module
-			$this->_errors[] = $this->l('This module need to be hooked in a column and your theme does not implement one');
-			parent::uninstall();
-			return false;
-		}
 		return true;
 	}
 
