@@ -133,7 +133,8 @@ class BlockCategories extends Module
 			foreach ($resultParents[$id_category] as $subcat)
 				$children[] = $this->getTree($resultParents, $resultIds, $maxDepth, $subcat['id_category'], $currentDepth + 1);
 
-		if (isset($resultIds[$id_category])) {
+		if (isset($resultIds[$id_category])) 
+		{
 			$link = $this->context->link->getCategoryLink($id_category, $resultIds[$id_category]['link_rewrite']);
 			$name = $resultIds[$id_category]['name'];
 			$desc = $resultIds[$id_category]['description'];
