@@ -162,6 +162,9 @@ class BlockCategories extends Module
 		{
 			if (file_exists(_PS_CAT_IMG_DIR_.(int)$category->id.'-'.$i.'_thumb.jpg'))
 			{
+				$files[$i]['filename'] = (int)$category->id.'-'.$i.'_thumb.jpg';
+				$files[$i]['is_linkable'] = true;
+				$files[$i]['assoc_table'] = _DB_PREFIX_.'category_thumb_link';
 				$files[$i]['type'] = HelperImageUploader::TYPE_IMAGE;
 				$files[$i]['image'] = ImageManager::thumbnail(_PS_CAT_IMG_DIR_.(int)$category->id.'-'.$i.'_thumb.jpg', $this->context->controller->table.'_'.(int)$category->id.'-'.$i.'_thumb.jpg', 100, 'jpg', true, true);
 				$files[$i]['delete_url'] = Context::getContext()->link->getAdminLink('AdminBlockCategories').'&deleteThumb='.$i.'&id_category='.(int)$category->id;
@@ -322,6 +325,7 @@ class BlockCategories extends Module
 			$id_category = (int)Tools::getValue('id_category');
 			$id_product = (int)Tools::getValue('id_product');
 
+
 			$this->smarty->assign('blockCategTree', $blockCategTree);
 
 			if (file_exists(_PS_THEME_DIR_.'modules/blockcategories/blockcategories_footer.tpl'))
@@ -354,22 +358,70 @@ class BlockCategories extends Module
 
 	public function hookCategoryAddition($params)
 	{
+		$this->updateThumbnailsLinks();
 		$this->_clearBlockcategoriesCache();
 	}
 
 	public function hookCategoryUpdate($params)
 	{
+		$this->updateThumbnailsLinks();
 		$this->_clearBlockcategoriesCache();
 	}
 
 	public function hookCategoryDeletion($params)
 	{
+		$this->deleteThumbnailsLinks();
 		$this->_clearBlockcategoriesCache();
 	}
 
 	public function hookActionAdminMetaControllerUpdate_optionsBefore($params)
 	{
 		$this->_clearBlockcategoriesCache();
+	}
+
+	public function deleteThumbnailsLinks()
+	{
+		// Backward compatibility
+		if (!class_exists('CategoryThumbLink'))
+			return;
+
+		if (Tools::isSubmit('id_category'))
+			CategoryThumbLink::deleteThumbnailsLinksFromIdCategory((int)Tools::getValue('id_category'));
+	}
+
+	public function updateThumbnailsLinks()
+	{
+		// Backward compatibility
+		if (!class_exists('CategoryThumbLink'))
+			return;
+
+		foreach ($_POST as $key => $val)
+		{
+			// Check if thumb are posted
+			if (strpos($key, 'thumb') && Tools::isSubmit('id_category'))
+			{
+				$thumb_name = $key;
+				if (Tools::isSubmit((string)$thumb_name))
+				{
+					$thumb_link_id = CategoryThumbLink::getIdFromName($thumb_name);
+
+					if ($thumb_link_id !== false)
+						$thumb_link = new CategoryThumbLink((int)$thumb_link_id['id_thumb_link']);
+					else
+						$thumb_link = new CategoryThumbLink();
+
+					$thumb_link->name = $thumb_name;
+					$thumb_link->link = Tools::getValue((string)$thumb_name, '');
+					$thumb_link->id_category = (int)Tools::getValue('id_category');
+
+					if (!$thumb_link->id)
+						$thumb_link->add();
+					else
+						$thumb_link->update();
+					unset($thumb_link);
+				}
+			}
+		}
 	}
 
 	public function renderForm()
