@@ -230,7 +230,7 @@ class BlockCategories extends Module
 			}
 
 			$blockCategTree = $this->getTree($resultParents, $resultIds, $maxdepth, ($category ? $category->id : null));
-			$this->smarty->assign('blockCategTree', $blockCategTree);
+			$this->smarty->assign(array('blockCategTree' => $blockCategTree, 'startingCategory' => $category));
 
 			if ((Tools::getValue('id_product') || Tools::getValue('id_category')) && isset($this->context->cookie->last_visited_category) && $this->context->cookie->last_visited_category)
 			{
