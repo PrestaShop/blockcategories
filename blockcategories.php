@@ -69,6 +69,7 @@ class BlockCategories extends Module
 			!$this->registerHook('actionAdminLanguagesControllerStatusBefore') ||
 			!$this->registerHook('displayBackOfficeCategory') ||
 			!Configuration::updateValue('BLOCK_CATEG_MAX_DEPTH', 4) ||
+			!Configuration::updateValue('BLOCK_CATEG_START_DEPTH', 1) ||
 			!Configuration::updateValue('BLOCK_CATEG_DHTML', 1) ||
 			!Configuration::updateValue('BLOCK_CATEG_ROOT_CATEGORY', 1))
 				return false;
@@ -88,6 +89,7 @@ class BlockCategories extends Module
 
 		if (!parent::uninstall() ||
 			!Configuration::deleteByName('BLOCK_CATEG_MAX_DEPTH') ||
+			!Configuration::deleteByName('BLOCK_CATEG_START_DEPTH') ||
 			!Configuration::deleteByName('BLOCK_CATEG_DHTML') ||
 			!Configuration::deleteByName('BLOCK_CATEG_ROOT_CATEGORY'))
 			return false;
@@ -100,6 +102,7 @@ class BlockCategories extends Module
 		if (Tools::isSubmit('submitBlockCategories'))
 		{
 			$maxDepth = (int)(Tools::getValue('BLOCK_CATEG_MAX_DEPTH'));
+			$startDepth = max(1, (int)(Tools::getValue('BLOCK_CATEG_START_DEPTH')));
 			$dhtml = Tools::getValue('BLOCK_CATEG_DHTML');
 			$nbrColumns = Tools::getValue('BLOCK_CATEG_NBR_COLUMN_FOOTER', 4);
 			if ($maxDepth < 0)
@@ -109,6 +112,7 @@ class BlockCategories extends Module
 			else
 			{
 				Configuration::updateValue('BLOCK_CATEG_MAX_DEPTH', (int)$maxDepth);
+				Configuration::updateValue('BLOCK_CATEG_START_DEPTH', (int)$startDepth);
 				Configuration::updateValue('BLOCK_CATEG_DHTML', (int)$dhtml);
 				Configuration::updateValue('BLOCK_CATEG_NBR_COLUMN_FOOTER', (int)$nbrColumns);
 				Configuration::updateValue('BLOCK_CATEG_SORT_WAY', Tools::getValue('BLOCK_CATEG_SORT_WAY'));
@@ -189,6 +193,13 @@ class BlockCategories extends Module
 				$category = new Category($category->id_parent, $this->context->language->id);
 			elseif (Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') == 3 && !$category->is_root_category && !$category->getSubCategories($category->id, true))
 				$category = new Category($category->id_parent, $this->context->language->id);
+			elseif (Configuration::get('BLOCK_CATEG_ROOT_CATEGORY') == 4 && !$category->is_root_category)
+			{
+				$start_at_depth = (int)Configuration::get('BLOCK_CATEG_START_DEPTH');
+				$starting_category_id = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_category` FROM `'._DB_PREFIX_.'category` WHERE `nleft` < '.pSQL((int)$category->nleft).' AND `nright` > '.pSQL((int)$category->nright).' AND `level_depth` = '.pSQL($start_at_depth));
+				if ($starting_category_id)
+					$category = new Category($starting_category_id, $this->context->language->id);
+			}
 		}
 		else
 			$category = new Category((int)Configuration::get('PS_HOME_CATEGORY'), $this->context->language->id);
@@ -407,6 +418,11 @@ class BlockCategories extends Module
 								'value' => 3,
 								'label' => $this->l('Current category, unless it has no subcategories, then parent one')
 							),
+							array(
+								'id' => 'current_top_parent',
+								'value' => 4,
+								'label' => $this->l('Current category top parent')
+							),
 						)
 					),
 					array(
@@ -414,6 +430,12 @@ class BlockCategories extends Module
 						'label' => $this->l('Maximum depth'),
 						'name' => 'BLOCK_CATEG_MAX_DEPTH',
 						'desc' => $this->l('Set the maximum depth of category sublevels displayed in this block (0 = infinite).'),
+					),
+					array(
+						'type' => 'text',
+						'label' => $this->l('Starting depth'),
+						'name' => 'BLOCK_CATEG_START_DEPTH',
+						'desc' => $this->l('Set the starting depth of category sublevels displayed in this block (0 = infinite).'),
 					),
 					array(
 						'type' => 'switch',
@@ -502,6 +524,7 @@ class BlockCategories extends Module
 	{
 		return array(
 			'BLOCK_CATEG_MAX_DEPTH' => Tools::getValue('BLOCK_CATEG_MAX_DEPTH', Configuration::get('BLOCK_CATEG_MAX_DEPTH')),
+			'BLOCK_CATEG_START_DEPTH' => Tools::getValue('BLOCK_CATEG_START_DEPTH', Configuration::get('BLOCK_CATEG_START_DEPTH')),
 			'BLOCK_CATEG_DHTML' => Tools::getValue('BLOCK_CATEG_DHTML', Configuration::get('BLOCK_CATEG_DHTML')),
 			'BLOCK_CATEG_NBR_COLUMN_FOOTER' => Tools::getValue('BLOCK_CATEG_NBR_COLUMN_FOOTER', Configuration::get('BLOCK_CATEG_NBR_COLUMN_FOOTER')),
 			'BLOCK_CATEG_SORT_WAY' => Tools::getValue('BLOCK_CATEG_SORT_WAY', Configuration::get('BLOCK_CATEG_SORT_WAY')),
