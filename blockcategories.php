@@ -405,7 +405,7 @@ class BlockCategories extends Module
 							array(
 								'id' => 'current_parent',
 								'value' => 3,
-								'label' => $this->l('Current category, unless it has no subcategories, then parent one')
+								'label' => $this->l('Current category, unless it has no subcategories, in which case the parent category of the current category is used')
 							),
 						)
 					),
