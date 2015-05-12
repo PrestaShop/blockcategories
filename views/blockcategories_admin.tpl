@@ -31,4 +31,7 @@
 	<div class="col-lg-4">
 		{$helper}
 	</div>
+	<div class="col-lg-6 col-lg-offset-3">
+		<div class="help-block">{l s='Recommended dimensions (for the default theme): %1spx x %2spx' sprintf=[$format.width, $format.height]}</div>
+	</div>
 </div>
