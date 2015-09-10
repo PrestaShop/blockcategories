@@ -72,8 +72,9 @@ class AdminBlockCategoriesController extends ModuleAdminController
 
 			if (count($available_keys) < count($files))
 			{
-				$total_errors[] = sprintf(Tools::displayError('You cannot upload more than %s files'), count($available_keys));
-				die();
+				$total_errors['name'] = sprintf(Tools::displayError('An error occurred while uploading the image :'));
+				$total_errors['error'] = sprintf(Tools::displayError('You cannot upload more files'));
+				die(Tools::jsonEncode(array('thumbnail' => array($total_errors))));
 			}
 
 			foreach ($files as $key => &$file)
@@ -81,19 +82,24 @@ class AdminBlockCategoriesController extends ModuleAdminController
 				$id = array_shift($available_keys);
 				$errors = array();
 				// Evaluate the memory required to resize the image: if it's too much, you can't resize it.
-				if (!ImageManager::checkImageMemoryLimit($file['save_path']))
+				if (isset($file['save_path']) && !ImageManager::checkImageMemoryLimit($file['save_path']))
 					$errors[] = Tools::displayError('Due to memory limit restrictions, this image cannot be loaded. Please increase your memory_limit value via your server\'s configuration settings. ');
 				// Copy new image
-				if (empty($errors) && !ImageManager::resize($file['save_path'], _PS_CAT_IMG_DIR_
-					.(int)Tools::getValue('id_category').'-'.$id.'_thumb.jpg'))
+				if (!isset($file['save_path']) || (empty($errors) && !ImageManager::resize($file['save_path'], _PS_CAT_IMG_DIR_
+					.(int)Tools::getValue('id_category').'-'.$id.'_thumb.jpg')))
 					$errors[] = Tools::displayError('An error occurred while uploading the image.');
 
 				if (count($errors))
 					$total_errors = array_merge($total_errors, $errors);
 
-				unlink($file['save_path']);
+				if (isset($file['save_path']) && is_file($file['save_path']))
+					unlink($file['save_path']);
 				//Necesary to prevent hacking
-				unset($file['save_path']);
+				if (isset($file['save_path']))
+					unset($file['save_path']);
+
+				if (isset($file['tmp_name']))
+					unset($file['tmp_name']);				
 
 				//Add image preview and delete url
 				$file['image'] = ImageManager::thumbnail(_PS_CAT_IMG_DIR_.(int)$category->id.'-'.$id.'_thumb.jpg',

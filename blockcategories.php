@@ -168,6 +168,12 @@ class BlockCategories extends Module
 			}
 		}
 
+		$images_types = ImageType::getImagesTypes('categories');
+		$formated_medium = ImageType::getFormatedName('medium');
+		foreach ($images_types as $k => $image_type)
+			if ($formated_medium == $image_type['name'])
+				$this->smarty->assign('format', $image_type);
+
 		$helper = new HelperImageUploader();
 		$helper->setMultiple(true)->setUseAjax(true)->setName('thumbnail')->setFiles($files)->setMaxFiles(3)->setUrl(
 			Context::getContext()->link->getAdminLink('AdminBlockCategories').'&ajax=1&id_category='.$category->id
