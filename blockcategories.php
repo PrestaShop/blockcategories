@@ -33,7 +33,7 @@ class BlockCategories extends Module
 	{
 		$this->name = 'blockcategories';
 		$this->tab = 'front_office_features';
-		$this->version = '2.9.1';
+		$this->version = '2.9.2';
 		$this->author = 'PrestaShop';
 
 		$this->bootstrap = true;
@@ -167,6 +167,12 @@ class BlockCategories extends Module
 				$files[$i]['delete_url'] = Context::getContext()->link->getAdminLink('AdminBlockCategories').'&deleteThumb='.$i.'&id_category='.(int)$category->id;
 			}
 		}
+
+		$images_types = ImageType::getImagesTypes('categories');
+		$formated_medium = ImageType::getFormatedName('medium');
+		foreach ($images_types as $k => $image_type)
+			if ($formated_medium == $image_type['name'])
+				$this->smarty->assign('format', $image_type);
 
 		$helper = new HelperImageUploader();
 		$helper->setMultiple(true)->setUseAjax(true)->setName('thumbnail')->setFiles($files)->setMaxFiles(3)->setUrl(
