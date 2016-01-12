@@ -61,7 +61,7 @@ class AdminBlockCategoriesController extends ModuleAdminController
 			foreach ($files as $file) {
 				$matches = array();
 
-				if (preg_match('/'.$category->id.'-([0-9])?_thumb.jpg/i', $file, $matches) === 1)
+				if (preg_match('/^'.$category->id.'-([0-9])?_thumb.jpg/i', $file, $matches) === 1)
 					$assigned_keys[] = (int)$matches[1];
 			}
 
