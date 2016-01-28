@@ -169,7 +169,7 @@ class BlockCategories extends Module
 		}
 
 		$images_types = ImageType::getImagesTypes('categories');
-		$formated_medium = ImageType::getFormatedName('medium');
+		$formated_medium = ImageType::getFormattedName('medium');
 		foreach ($images_types as $k => $image_type)
 			if ($formated_medium == $image_type['name'])
 				$this->smarty->assign('format', $image_type);
