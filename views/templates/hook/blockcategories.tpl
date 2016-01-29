@@ -23,33 +23,26 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
-<div class="blockcategories_footer">
-<!-- Block categories module -->
-	<h4 class="title_block">{l s='Categories' mod='blockcategories'}</h4>
-<div class="category_footer" style="float:left;clear:none;width:{$widthColumn}%">
-	<div style="float:left" class="list">
-		<ul class="tree {if $isDhtml}dhtml{/if}">
-	
-		{foreach from=$blockCategTree.children item=child name=blockCategTree}
-			{if $smarty.foreach.blockCategTree.last}
-				{include file="$branche_tpl_path" node=$child last='true'}
-			{else}
-				{include file="$branche_tpl_path" node=$child}
-			{/if}
-		
-			{if ($smarty.foreach.blockCategTree.iteration mod $numberColumn) == 0 AND !$smarty.foreach.blockCategTree.last}
-		</ul>
-	</div>
-</div>
+{function name="categories" nodes=[] depth=0}
+  {strip}
+    {if $nodes|count}
+      <ul>
+        {foreach from=$nodes item=node}
+          <li>
+            <a href="{$node.link nofilter}">{$node.name}</a>
+            <div>
+              {categories nodes=$node.children depth=1}
+            </div>
+          </li>
+        {/foreach}
+      </ul>
+    {/if}
+  {/strip}
+{/function}
 
-<div class="category_footer" style="float:left;clear:none;width:{$widthColumn}%">
-		<div style="float:left" class="list">
-		<ul class="tree {if $isDhtml}dhtml{/if}">
-			{/if}
-			{/foreach}
-		</ul>
-	</div>
-</div>
-<br class="clear"/>
-<!-- /Block categories module -->
+<div class="block-categories">
+  <ul>
+    <li><a href="{$categories.link nofilter}">{$categories.name}</a></li>
+    {categories nodes=$categories.children}
+  </ul>
 </div>
