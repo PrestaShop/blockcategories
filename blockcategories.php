@@ -135,16 +135,15 @@ class BlockCategories extends Module
 		{
 			$link = $this->context->link->getCategoryLink($id_category, $resultIds[$id_category]['link_rewrite']);
 			$name = $resultIds[$id_category]['name'];
-			$desc = $resultIds[$id_category]['description'];
 		}
 		else
-			$link = $name = $desc = '';
+			$link = $name = '';
 			
 		$return = array(
 			'id' => $id_category,
 			'link' => $link,
 			'name' => $name,
-			'desc'=> $desc,
+			'desc'=> $name,
 			'children' => $children
 		);
 		return $return;
@@ -215,7 +214,7 @@ class BlockCategories extends Module
 			$resultIds = array();
 			$resultParents = array();
 			$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-			SELECT c.id_parent, c.id_category, cl.name, cl.description, cl.link_rewrite
+			SELECT c.id_parent, c.id_category, cl.name, cl.link_rewrite
 			FROM `'._DB_PREFIX_.'category` c
 			INNER JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category` AND cl.`id_lang` = '.(int)$this->context->language->id.Shop::addSqlRestrictionOnLang('cl').')
 			INNER JOIN `'._DB_PREFIX_.'category_shop` cs ON (cs.`id_category` = c.`id_category` AND cs.`id_shop` = '.(int)$this->context->shop->id.')
@@ -293,7 +292,7 @@ class BlockCategories extends Module
 			// Get all groups for this customer and concatenate them as a string: "1,2,3..."
 			$groups = implode(', ', Customer::getGroupsStatic((int)$this->context->customer->id));
 			if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-				SELECT DISTINCT c.id_parent, c.id_category, cl.name, cl.description, cl.link_rewrite
+				SELECT DISTINCT c.id_parent, c.id_category, cl.name, cl.link_rewrite
 				FROM `'._DB_PREFIX_.'category` c
 				'.Shop::addSqlAssociation('category', 'c').'
 				LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category` AND cl.`id_lang` = '.(int)$this->context->language->id.Shop::addSqlRestrictionOnLang('cl').')
