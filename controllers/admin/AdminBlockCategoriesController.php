@@ -40,6 +40,15 @@ class AdminBlockCategoriesController extends ModuleAdminController
 			if (empty($this->context->controller->errors))
 				Tools::clearSmartyCache();
 
+			// Backward compatibility
+			if (class_exists('CategoryThumbLink'))
+			{
+				$id_thumb_link = CategoryThumbLink::getIdFromName(Tools::getValue('id_category').'-'.(int)$id_thumb.'_thumb_jpg');
+
+				if ($id_thumb_link)
+					CategoryThumbLink::deleteThumbnailLinkFromId((int)$id_thumb_link['id_thumb_link']);
+			}
+
 			Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminCategories').'&id_category='
 				.(int)Tools::getValue('id_category').'&updatecategory');
 		}
@@ -89,8 +98,7 @@ class AdminBlockCategoriesController extends ModuleAdminController
 					.(int)Tools::getValue('id_category').'-'.$id.'_thumb.jpg')))
 					$errors[] = Tools::displayError('An error occurred while uploading the image.');
 
-				if (count($errors))
-					$total_errors = array_merge($total_errors, $errors);
+
 
 				if (isset($file['save_path']) && is_file($file['save_path']))
 					unlink($file['save_path']);
@@ -106,6 +114,23 @@ class AdminBlockCategoriesController extends ModuleAdminController
 					$this->context->controller->table.'_'.(int)$category->id.'-'.$id.'_thumb.jpg', 100, 'jpg', true, true);
 				$file['delete_url'] = Context::getContext()->link->getAdminLink('AdminBlockCategories').'&deleteThumb='
 					.$id.'&id_category='.(int)$category->id.'&updatecategory';
+
+				// Backward compatibility
+				if (class_exists('CategoryThumbLink'))
+				{
+					if (!CategoryThumbLink::getIdFromName((int)Tools::getValue('id_category') . '-' . $id . '_thumb.jpg'))
+					{
+						$thumb_link = new CategoryThumbLink();
+						$thumb_link->name = (int)Tools::getValue('id_category') . '-' . $id . '_thumb.jpg';
+						$thumb_link->id_category = (int)Tools::getValue('id_category');
+						if (!$thumb_link->add())
+							$errors[] = sprintf(Tools::displayError('Could save link associated to the following thumbnail: %s'),
+												(int)Tools::getValue('id_category') . '-' . $id . '_thumb.jpg');
+					}
+				}
+
+				if (count($errors))
+					$total_errors = array_merge($total_errors, $errors);
 			}
 
 			if (count($total_errors))
