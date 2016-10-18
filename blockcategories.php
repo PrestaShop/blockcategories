@@ -69,6 +69,7 @@ class BlockCategories extends Module
 			!$this->registerHook('actionAdminLanguagesControllerStatusBefore') ||
 			!$this->registerHook('displayBackOfficeCategory') ||
 			!Configuration::updateValue('BLOCK_CATEG_MAX_DEPTH', 4) ||
+			!Configuration::updateValue('BLOCK_CATEG_MAX_DEPTH_FOOTER', 4) ||
 			!Configuration::updateValue('BLOCK_CATEG_DHTML', 1) ||
 			!Configuration::updateValue('BLOCK_CATEG_ROOT_CATEGORY', 1))
 				return false;
@@ -88,6 +89,7 @@ class BlockCategories extends Module
 
 		if (!parent::uninstall() ||
 			!Configuration::deleteByName('BLOCK_CATEG_MAX_DEPTH') ||
+			!Configuration::deleteByName('BLOCK_CATEG_MAX_DEPTH_FOOTER') ||
 			!Configuration::deleteByName('BLOCK_CATEG_DHTML') ||
 			!Configuration::deleteByName('BLOCK_CATEG_ROOT_CATEGORY'))
 			return false;
@@ -100,6 +102,7 @@ class BlockCategories extends Module
 		if (Tools::isSubmit('submitBlockCategories'))
 		{
 			$maxDepth = (int)(Tools::getValue('BLOCK_CATEG_MAX_DEPTH'));
+			$maxDepthFooter = (int)(Tools::getValue('BLOCK_CATEG_MAX_DEPTH_FOOTER'));
 			$dhtml = Tools::getValue('BLOCK_CATEG_DHTML');
 			$nbrColumns = Tools::getValue('BLOCK_CATEG_NBR_COLUMN_FOOTER', 4);
 			if ($maxDepth < 0)
@@ -109,6 +112,7 @@ class BlockCategories extends Module
 			else
 			{
 				Configuration::updateValue('BLOCK_CATEG_MAX_DEPTH', (int)$maxDepth);
+				Configuration::updateValue('BLOCK_CATEG_MAX_DEPTH_FOOTER', (int)$maxDepthFooter);
 				Configuration::updateValue('BLOCK_CATEG_DHTML', (int)$dhtml);
 				Configuration::updateValue('BLOCK_CATEG_NBR_COLUMN_FOOTER', (int)$nbrColumns);
 				Configuration::updateValue('BLOCK_CATEG_SORT_WAY', Tools::getValue('BLOCK_CATEG_SORT_WAY'));
@@ -289,7 +293,7 @@ class BlockCategories extends Module
 		$this->setLastVisitedCategory();
 		if (!$this->isCached('blockcategories_footer.tpl', $this->getCacheId()))
 		{
-			$maxdepth = Configuration::get('BLOCK_CATEG_MAX_DEPTH');
+			$maxdepth = Configuration::get('BLOCK_CATEG_MAX_DEPTH_FOOTER');
 			// Get all groups for this customer and concatenate them as a string: "1,2,3..."
 			$groups = implode(', ', Customer::getGroupsStatic((int)$this->context->customer->id));
 			if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
@@ -320,7 +324,7 @@ class BlockCategories extends Module
 			$this->smarty->assign('numberColumn', $numberColumn);
 			$this->smarty->assign('widthColumn', $widthColumn);
 
-			$blockCategTree = $this->getTree($resultParents, $resultIds, Configuration::get('BLOCK_CATEG_MAX_DEPTH'));
+			$blockCategTree = $this->getTree($resultParents, $resultIds, Configuration::get('BLOCK_CATEG_MAX_DEPTH_FOOTER'));
 			unset($resultParents, $resultIds);
 
 			$isDhtml = (Configuration::get('BLOCK_CATEG_DHTML') == 1 ? true : false);
@@ -422,6 +426,12 @@ class BlockCategories extends Module
 						'desc' => $this->l('Set the maximum depth of category sublevels displayed in this block (0 = infinite).'),
 					),
 					array(
+						'type' => 'text',
+						'label' => $this->l('Maximum depth for footer'),
+						'name' => 'BLOCK_CATEG_MAX_DEPTH_FOOTER',
+						'desc' => $this->l('Set the maximum depth of category sublevels displayed in this block in footer (0 = infinite).'),
+					),
+					array(
 						'type' => 'switch',
 						'label' => $this->l('Dynamic'),
 						'name' => 'BLOCK_CATEG_DHTML',
@@ -508,6 +518,7 @@ class BlockCategories extends Module
 	{
 		return array(
 			'BLOCK_CATEG_MAX_DEPTH' => Tools::getValue('BLOCK_CATEG_MAX_DEPTH', Configuration::get('BLOCK_CATEG_MAX_DEPTH')),
+			'BLOCK_CATEG_MAX_DEPTH_FOOTER' => Tools::getValue('BLOCK_CATEG_MAX_DEPTH_FOOTER', Configuration::get('BLOCK_CATEG_MAX_DEPTH_FOOTER')),
 			'BLOCK_CATEG_DHTML' => Tools::getValue('BLOCK_CATEG_DHTML', Configuration::get('BLOCK_CATEG_DHTML')),
 			'BLOCK_CATEG_NBR_COLUMN_FOOTER' => Tools::getValue('BLOCK_CATEG_NBR_COLUMN_FOOTER', Configuration::get('BLOCK_CATEG_NBR_COLUMN_FOOTER')),
 			'BLOCK_CATEG_SORT_WAY' => Tools::getValue('BLOCK_CATEG_SORT_WAY', Configuration::get('BLOCK_CATEG_SORT_WAY')),
